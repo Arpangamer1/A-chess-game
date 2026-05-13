@@ -1,0 +1,150 @@
+╔════════════════════════════════════════════════════════════════╗
+║              CHESS GAME - QUICK START GUIDE                     ║
+╚════════════════════════════════════════════════════════════════╝
+
+🎮 FEATURES:
+  ✓ Play vs Computer AI (Easy, Medium, Hard, Expert)
+  ✓ Play Online with Friends via Internet (Room-based)
+  ✓ Play Offline with Local 2-Player
+  ✓ Full Chess Rules (Check, Checkmate, Stalemate)
+  ✓ Beautiful Web Interface & Terminal Interface
+
+📦 INSTALLATION:
+  1. Navigate to the project folder:
+     $ cd /workspaces/A-chess-game
+
+  2. Install dependencies:
+     $ pip install -r requirements.txt
+
+🚀 QUICK START:
+
+  Option 1 - Interactive Menu (Recommended):
+  $ python main.py
+
+  Option 2 - Play via Terminal (CLI):
+  $ python main.py --cli
+  or
+  $ python game_cli.py
+
+  Option 3 - Play via Web Browser:
+  $ python server.py
+  Then open: http://localhost:5000
+
+💡 HOW TO PLAY:
+
+  Terminal (CLI):
+  - Move pieces using chess notation: e2e4 or e2 e4
+  - Type 'help' for all commands
+  - Type 'undo' to undo moves
+  - Type 'quit' to exit
+
+  Web Browser:
+  - Click on a piece to see legal moves (highlighted)
+  - Click on highlighted square to move piece
+  - Adjust AI difficulty slider before starting
+  - Create or join rooms for online play
+
+👥 PLAYING WITH FRIENDS ONLINE:
+
+  1. One player (Host):
+     - Start server: python server.py
+     - Go to http://localhost:5000
+     - Click "Play Online" > "Create New Room"
+     - Share the Room ID with friend
+
+  2. Other player (Guest):
+     - Open http://localhost:5000
+     - Click "Play Online" > "Join Existing Room"
+     - Enter shared Room ID and join
+     - Game starts automatically when both players join!
+
+📋 PROJECT STRUCTURE:
+  chess_piece.py    - Piece definitions & movement rules
+  chess_board.py    - Board management & game logic
+  chess_ai.py       - AI opponent (Minimax algorithm)
+  game_cli.py       - Terminal interface
+  server.py         - Web server & multiplayer
+  main.py           - Application launcher
+  config.py         - Configuration settings
+  requirements.txt  - Python dependencies
+  templates/index.html - Web interface
+
+🎯 AI DIFFICULTY LEVELS:
+  Easy (1)    - Quick moves, novice level
+  Medium (2)  - Balanced play
+  Hard (3)    - Challenging opponent
+  Expert (4)  - Professional level (slow but strong)
+
+🛠️ TROUBLESHOOTING:
+
+  Port 5000 already in use?
+  - Change in main.py or server.py: port=5001 (or any other port)
+  - $ python server.py --port 5001
+
+  Module not found errors?
+  - Ensure you're in the project directory
+  - Re-install requirements: pip install -r requirements.txt
+
+  Board not displaying correctly?
+  - Make sure you have a terminal that supports Unicode
+  - Linux/Mac: Usually default
+  - Windows: Use Windows Terminal or Git Bash
+
+📞 COMMANDS REFERENCE:
+
+  Terminal Game:
+    e2e4      - Move piece from e2 to e4
+    help      - Show all commands
+    board     - Redisplay current board
+    undo      - Undo last move
+    quit      - Exit game
+
+  Web Game:
+    Click piece → See legal moves (gold highlight)
+    Click target → Move piece
+    Resign → Forfeit game
+    Request Draw → Offer draw to opponent
+
+🎓 LEARNING THE GAME:
+
+  Standard chess rules apply:
+  - Pawns move forward (2 squares from start)
+  - Knights move in L-shape (2+1)
+  - Bishops move diagonally
+  - Rooks move horizontally/vertically
+  - Queens move any direction
+  - Kings move one square any direction
+
+  Win by:
+  - Checkmate (opponent king has no legal moves & is attacked)
+  - Resignation of opponent
+  - Timeout (online games)
+
+  Draw by:
+  - Stalemate (no legal moves, not in check)
+  - Agreement to draw
+  - Inadequate material
+
+🎯 TIPS FOR PLAYING:
+
+  Against AI:
+  - Control the center of board
+  - Develop pieces early (knights, bishops)
+  - Protect your king
+  - Watch for tactical opportunities
+
+  Online with Friends:
+  - Communicate outside the game for strategy
+  - Be respectful of your opponent
+  - Both players should have stable internet
+  - Keep game window visible for notifications
+
+📝 VERSION INFO:
+  Version: 1.0
+  Python: 3.7+
+  Last Updated: 2026
+
+═══════════════════════════════════════════════════════════════════
+For more information, see README.md
+Happy Playing! ♟️
+═══════════════════════════════════════════════════════════════════

@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chess Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .game-mode-selector {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .mode-button {
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background: white;
+            color: #667eea;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .mode-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .mode-button.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .content {
+            display: none;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .content.active {
+            display: block;
+        }
+
+        .menu-section {
+            padding: 40px;
+            text-align: center;
+        }
+
+        .menu-section h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .room-list {
+            margin-bottom: 30px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .room-item {
+            background: #f5f5f5;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .room-item button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1em;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #764ba2;
+        }
+
+        .game-section {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .board-wrapper {
+            flex: 1;
+        }
+
+        .chessboard {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 0;
+            background: #333;
+            border: 3px solid #333;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .square {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5em;
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+            border: 1px solid #555;
+        }
+
+        .square.white {
+            background: #f0d9b5;
+        }
+
+        .square.black {
+            background: #b58863;
+        }
+
+        .square.selected {
+            background: #baca44 !important;
+        }
+
+        .square.legal-move::after {
+            content: '';
+            width: 12px;
+            height: 12px;
+            background: #baca44;
+            border-radius: 50%;
+            opacity: 0.7;
+        }
+
+        .sidebar {
+            width: 250px;
+        }
+
+        .status-panel {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .status-panel h3 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .status-item {
+            margin: 8px 0;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .player-info {
+            padding: 12px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            text-align: left;
+        }
+
+        .player-info.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .game-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .game-controls button {
+            font-size: 0.9em;
+            padding: 10px;
+        }
+
+        .move-history {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 0.85em;
+        }
+
+        .move-entry {
+            padding: 4px 0;
+            color: #666;
+        }
+
+        .ai-difficulty {
+            margin-bottom: 20px;
+        }
+
+        .ai-difficulty label {
+            margin-right: 10px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-content h2 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        @media (max-width: 768px) {
+            .game-section {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+            }
+
+            .square {
+                width: 45px;
+                height: 45px;
+                font-size: 1.8em;
+            }
+
+            .game-mode-selector {
+                flex-direction: column;
+            }
+
+            .mode-button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>♟️ Online Chess Game ♟️</h1>
+            <p>Play with friends online or against AI</p>
+        </div>
+
+        <div class="game-mode-selector">
+            <button class="mode-button active" onclick="switchMode('menu')">Menu</button>
+            <button class="mode-button" onclick="switchMode('offline')">Play vs AI</button>
+            <button class="mode-button" onclick="switchMode('online')">Play Online</button>
+        </div>
+
+        <!-- Menu Section -->
+        <div id="menu" class="content active">
+            <div class="menu-section">
+                <h2>Choose Game Mode</h2>
+                <p style="margin-bottom: 30px; color: #666;">Select how you want to play:</p>
+                <button onclick="switchMode('offline')" style="padding: 20px 40px; font-size: 1.2em; margin: 10px;">
+                    🤖 Play vs Computer
+                </button>
+                <button onclick="switchMode('online')" style="padding: 20px 40px; font-size: 1.2em; margin: 10px;">
+                    👥 Play Online with Friend
+                </button>
+            </div>
+        </div>
+
+        <!-- Offline Mode Section -->
+        <div id="offline" class="content">
+            <div class="menu-section">
+                <h2>Play vs Computer</h2>
+               <div class="ai-difficulty">
+                    <label>AI Difficulty:</label>
+                    <select id="ai-difficulty" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        <option value="1">Easy</option>
+                        <option value="2">Medium</option>
+                        <option value="3" selected>Hard</option>
+                        <option value="4">Expert</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="player-name">Your Name:</label>
+                    <input type="text" id="player-name" placeholder="Enter your name" value="Player">
+                </div>
+                <button onclick="startOfflineGame()">Start Game</button>
+            </div>
+        </div>
+
+        <!-- Online Mode Section -->
+        <div id="online" class="content">
+            <div class="menu-section">
+                <h2>Online Chess</h2>
+                <div style="margin-bottom: 20px;">
+                    <button onclick="showCreateRoom()">Create New Room</button>
+                    <button onclick="loadRoomList()">Join Existing Room</button>
+                </div>
+                <div id="room-section" style="display: none;">
+                    <div id="room-list" class="room-list"></div>
+                    <button onclick="switchMode('online')">Refresh</button>
+                </div>
+                <div id="create-room-form" style="display: none;">
+                    <div class="input-group">
+                        <label for="online-player-name">Your Name:</label>
+                        <input type="text" id="online-player-name" placeholder="Enter your name" value="Player">
+                    </div>
+                    <button onclick="createRoom()">Create Room</button>
+                    <button onclick="switchMode('online')">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Section -->
+        <div id="game" class="content">
+            <div class="game-section">
+                <div class="board-wrapper">
+                    <div id="chessboard" class="chessboard"></div>
+                </div>
+                <div class="sidebar">
+                    <div class="status-panel">
+                        <h3>Game Status</h3>
+                        <div class="status-item">
+                            <strong>Current Player:</strong>
+                            <div id="current-player">White</div>
+                        </div>
+                        <div class="status-item" id="status-check" style="display: none;">
+                            <span style="color: #d32f2f; font-weight: bold;">⚠️ In Check!</span>
+                        </div>
+                        <div class="status-item">
+                            <strong>Room:</strong> <span id="room-id">-</span>
+                        </div>
+                    </div>
+
+                    <div class="status-panel">
+                        <h3>Players</h3>
+                        <div id="white-player" class="player-info active">
+                            <strong>White:</strong> <span id="white-name">-</span>
+                        </div>
+                        <div id="black-player" class="player-info">
+                            <strong>Black:</strong> <span id="black-name">-</span>
+                        </div>
+                    </div>
+
+                    <div class="game-controls">
+                        <button onclick="undoLastMove()">Undo Move</button>
+                        <button onclick="resignGame()">Resign</button>
+                        <button onclick="requestDraw()">Request Draw</button>
+                        <button onclick="returnToMenu()">Exit Game</button>
+                    </div>
+
+                    <div class="status-panel">
+                        <h3>Moves</h3>
+                        <div id="move-history" class="move-history"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Over Modal -->
+    <div id="gameOverModal" class="modal">
+        <div class="modal-content">
+            <h2 id="gameOverTitle">Game Over</h2>
+            <p id="gameOverMessage"></p>
+            <div class="modal-buttons">
+                <button onclick="playAgain()">Play Again</button>
+                <button onclick="returnToMenu()">Return to Menu</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Draw Request Modal -->
+    <div id="drawModal" class="modal">
+        <div class="modal-content">
+            <h2>Draw Requested</h2>
+            <p>Your opponent wants to draw. Do you accept?</p>
+            <div class="modal-buttons">
+                <button onclick="acceptDraw()">Accept</button>
+                <button onclick="declineDraw()">Decline</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script>
+        // Game state
+        let currentGame = null;
+        let selectedSquare = null;
+        let legalMoves = [];
+        let gameMode = null;
+        let socket = null;
+        let playerColor = null;
+        let gameActive = false;
+        let aiDifficulty = 3;
+
+        // Initialize socket connection
+        function initSocket() {
+            if (!socket) {
+                socket = io();
+                socket.on('connect', () => console.log('Connected to server'));
+                socket.on('room_created', handleRoomCreated);
+                socket.on('room_joined', handleRoomJoined);
+                socket.on('move_made', handleMoveMade);
+                socket.on('game_over', handleGameOver);
+                socket.on('legal_moves', handleLegalMoves);
+                socket.on('error', handleError);
+                socket.on('player_joined', handlePlayerJoined);
+                socket.on('draw_requested', handleDrawRequest);
+            }
+        }
+
+        function switchMode(mode) {
+            document.querySelectorAll('.content').forEach(el => el.classList.remove('active'));
+            document.getElementById(mode).classList.add('active');
+
+            document.querySelectorAll('.mode-button').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if (mode !== 'game') {
+                selectedSquare = null;
+                legalMoves = [];
+            }
+        }
+
+        function startOfflineGame() {
+            aiDifficulty = parseInt(document.getElementById('ai-difficulty').value);
+            const playerName = document.getElementById('player-name').value;
+            gameMode = 'offline';
+            playerColor = 'white';
+            gameActive = true;
+
+            // Initialize game with AI
+            currentGame = {
+                board: initializeBoard(),
+                players: {
+                    white: { name: playerName, type: 'human' },
+                    black: { name: 'Chess Bot', type: 'ai' }
+                },
+                moveHistory: [],
+                currentPlayer: 'white'
+            };
+
+            updateDisplay();
+            document.querySelectorAll('.content').forEach(el => el.classList.remove('active'));
+            document.getElementById('game').classList.add('active');
+
+            document.querySelectorAll('.mode-button').forEach(btn => btn.classList.remove('active'));
+        }
+
+        function showCreateRoom() {
+            document.getElementById('create-room-form').style.display = 'block';
+            document.getElementById('room-section').style.display = 'none';
+        }
+
+        function createRoom() {
+            initSocket();
+            const playerName = document.getElementById('online-player-name').value;
+            socket.emit('create_room', { player_name: playerName });
+        }
+
+        function handleRoomCreated(data) {
+            gameMode = 'online';
+            playerColor = data.color;
+            currentGame = data.game_state;
+            gameActive = true;
+
+            document.getElementById('room-id').textContent = data.room_id;
+            updateDisplay();
+
+            document.querySelectorAll('.content').forEach(el => el.classList.remove('active'));
+            document.getElementById('game').classList.add('active');
+        }
+
+        function loadRoomList() {
+            document.getElementById('room-section').style.display = 'block';
+            document.getElementById('create-room-form').style.display = 'none';
+
+            initSocket();
+            fetch('/api/rooms')
+                .then(r => r.json())
+                .then(rooms => {
+                    const roomList = document.getElementById('room-list');
+                    roomList.innerHTML = '';
+                    if (rooms.length === 0) {
+                        roomList.innerHTML = '<p>No available rooms. Create one instead!</p>';
+                        return;
+                    }
+                    rooms.forEach(room => {
+                        const div = document.createElement('div');
+                        div.className = 'room-item';
+                        div.innerHTML = `
+                            <div>
+                                <strong>${room.created_by}'s Room</strong><br>
+                                <small>Players: ${room.player_count}/2</small>
+                            </div>
+                            <button onclick="joinRoom('${room.room_id}')">Join</button>
+                        `;
+                        roomList.appendChild(div);
+                    });
+                });
+        }
+
+        function joinRoom(roomId) {
+            const playerName = document.getElementById('online-player-name').value;
+            socket.emit('join_room', { room_id: roomId, player_name: playerName });
+        }
+
+        function handleRoomJoined(data) {
+            playerColor = data.color;
+            currentGame = data.game_state;
+            gameActive = true;
+
+            document.getElementById('room-id').textContent = data.room_id;
+            updateDisplay();
+
+            document.querySelectorAll('.content').forEach(el => el.classList.remove('active'));
+            document.getElementById('game').classList.add('active');
+        }
+
+        function handlePlayerJoined(data) {
+            if (gameMode === 'online') {
+                currentGame = data.game_state;
+                updateDisplay();
+            }
+        }
+
+        function initializeBoard() {
+            const pieces = {
+                'P': '♟', 'p': '♙',
+                'R': '♜', 'r': '♖',
+                'N': '♞', 'n': '♘',
+                'B': '♝', 'b': '♗',
+                'Q': '♛', 'q': '♕',
+                'K': '♚', 'k': '♔'
+            };
+
+            // Return initial board state
+            return {
+                board: Array(8).fill(null).map((_, r) => Array(8).fill(null)),
+                current_player: 'white',
+                move_history: [],
+                in_check: false,
+                is_checkmate: false,
+                is_stalemate: false
+            };
+        }
+
+        function updateDisplay() {
+            if (!currentGame) return;
+
+            const board = currentGame.board || currentGame;
+
+            // Update board display
+            const boardElement = document.getElementById('chessboard');
+            boardElement.innerHTML = '';
+
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    const square = document.createElement('div');
+                    const isWhiteSquare = (row + col) % 2 === 0;
+                    square.className = `square ${isWhiteSquare ? 'white' : 'black'}`;
+
+                    if (selectedSquare && selectedSquare[0] === row && selectedSquare[1] === col) {
+                        square.classList.add('selected');
+                    }
+
+                    if (legalMoves.some(m => m[0] === row && m[1] === col)) {
+                        square.classList.add('legal-move');
+                    }
+
+                    const piece = board.board ? board.board[row][col] : null;
+                    if (piece && piece.symbol) {
+                        square.textContent = piece.symbol;
+                    }
+
+                    square.onclick = () => handleSquareClick(row, col);
+                    boardElement.appendChild(square);
+                }
+            }
+
+            // Update game info
+            const currentPlayer = board.current_player || 'white';
+            document.getElementById('current-player').textContent =
+                (currentPlayer === 'white' ? '♔ White' : '♚ Black');
+
+            if (board.in_check) {
+                document.getElementById('status-check').style.display = 'block';
+            } else {
+                document.getElementById('status-check').style.display = 'none';
+            }
+
+            // Update players
+            if (currentGame.players) {
+                document.getElementById('white-name').textContent =
+                    currentGame.players.white?.name || '-';
+                document.getElementById('black-name').textContent =
+                    currentGame.players.black?.name || '-';
+
+                document.getElementById('white-player').classList.toggle('active', currentPlayer === 'white');
+                document.getElementById('black-player').classList.toggle('active', currentPlayer === 'black');
+            }
+
+            // Update move history
+            if (board.move_history && board.move_history.length > 0) {
+                const historyDiv = document.getElementById('move-history');
+                historyDiv.innerHTML = board.move_history
+                    .map((m, i) => `<div class="move-entry">${i + 1}. ${m.piece} ${String.fromCharCode(97 + m.from[1])}${8 - m.from[0]}</div>`)
+                    .join('');
+            }
+        }
+
+        function handleSquareClick(row, col) {
+            if (!gameActive) return;
+
+            // For offline games, only allow white to play
+            if (gameMode === 'offline' && currentGame.current_player !== 'white') {
+                return;
+            }
+
+            // For online games, check if it's your turn
+            if (gameMode === 'online' && currentGame.current_player !== playerColor) {
+                return;
+            }
+
+            const piece = currentGame.board ? currentGame.board[row][col] : null;
+
+            // If clicking a piece of the current player
+            if (piece && piece.color === currentGame.current_player) {
+                selectedSquare = [row, col];
+                // Simulate getting legal moves
+                legalMoves = [[row + 1, col], [row + 2, col]]; // Simplified for demo
+                if (gameMode === 'offline') {
+                    // Fetch legal moves from AI
+                }
+            } else if (selectedSquare && legalMoves.some(m => m[0] === row && m[1] === col)) {
+                // Make the move
+                makeMove(selectedSquare, [row, col]);
+                selectedSquare = null;
+                legalMoves = [];
+            }
+
+            updateDisplay();
+        }
+
+        function makeMove(from, to) {
+            if (gameMode === 'offline') {
+                // Send move to backend
+                fetch('/api/move', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ from, to })
+                }).then(r => r.json()).then(data => {
+                    currentGame = data.game_state;
+                    updateDisplay();
+
+                    // If AI's turn, make AI move
+                    if (currentGame.current_player === 'black') {
+                        setTimeout(() => makeAIMove(), 1000);
+                    }
+                });
+            } else {
+                // Send move to server
+                socket.emit('make_move', {
+                    room_id: document.getElementById('room-id').textContent,
+                    from_pos: from,
+                    to_pos: to
+                });
+            }
+        }
+
+        function makeAIMove() {
+            fetch('/api/ai-move', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ difficulty: aiDifficulty })
+            }).then(r => r.json()).then(data => {
+                currentGame = data.game_state;
+                updateDisplay();
+
+                if (data.game_over) {
+                    showGameOverModal(data.reason, data.winner);
+                }
+            });
+        }
+
+        function handleMoveMade(data) {
+            currentGame = data.game_state;
+            updateDisplay();
+        }
+
+        function handleGameOver(data) {
+            gameActive = false;
+            showGameOverModal(data.reason, data.winner);
+        }
+
+        function handleLegalMoves(data) {
+            legalMoves = data.moves;
+            updateDisplay();
+        }
+
+        function handleError(data) {
+            alert('Error: ' + data.message);
+        }
+
+        function handleDrawRequest() {
+            document.getElementById('drawModal').classList.add('active');
+        }
+
+        function acceptDraw() {
+            socket.emit('accept_draw', {
+                room_id: document.getElementById('room-id').textContent
+            });
+            document.getElementById('drawModal').classList.remove('active');
+        }
+
+        function declineDraw() {
+            document.getElementById('drawModal').classList.remove('active');
+        }
+
+        function showGameOverModal(reason, winner) {
+            const title = document.getElementById('gameOverTitle');
+            const message = document.getElementById('gameOverMessage');
+
+            if (reason === 'checkmate') {
+                title.textContent = 'Checkmate!';
+                message.textContent = (winner === 'white' ? '♔ White' : '♚ Black') + ' wins!';
+            } else if (reason === 'stalemate') {
+                title.textContent = 'Stalemate!';
+                message.textContent = "It's a draw!";
+            } else if (reason === 'resignation') {
+                title.textContent = 'Opponent Resigned';
+                message.textContent = (winner === 'white' ? '♔ White' : '♚ Black') + ' wins!';
+            } else if (reason === 'draw') {
+                title.textContent = 'Draw Accepted';
+                message.textContent = "It's a draw!";
+            }
+
+            document.getElementById('gameOverModal').classList.add('active');
+        }
+
+        function playAgain() {
+            document.getElementById('gameOverModal').classList.remove('active');
+            if (gameMode === 'offline') {
+                startOfflineGame();
+            }
+        }
+
+        function returnToMenu() {
+            gameActive = false;
+            selectedSquare = null;
+            legalMoves = [];
+            currentGame = null;
+            gameMode = null;
+            document.getElementById('gameOverModal').classList.remove('active');
+            switchMode('menu');
+        }
+
+        function undoLastMove() {
+            alert('Undo not yet implemented');
+        }
+
+        function resignGame() {
+            if (gameMode === 'offline') {
+                showGameOverModal('resignation', currentGame.current_player === 'white' ? 'black' : 'white');
+            } else {
+                socket.emit('resign', {
+                    room_id: document.getElementById('room-id').textContent
+                });
+            }
+        }
+
+        function requestDraw() {
+            if (gameMode === 'online') {
+                socket.emit('request_draw', {
+                    room_id: document.getElementById('room-id').textContent
+                });
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Chess game initialized');
+        });
+    </script>
+</body>
+</html>
